@@ -18,9 +18,10 @@ reg [3:0] state;
 
 
 always @(posedge clk) begin
-    case(state) begin
+    case(state)
         IDLE: begin
-        
+            step_out = IDLE;
+            state = IDLE;
         end
         S0: begin
            step_out = S0;
@@ -54,7 +55,10 @@ always @(posedge clk) begin
             step_out = S7;
             state = S0;
         end
-    end    
+        default: begin
+            state=S0;
+        end
+    endcase
 end
 
 endmodule
