@@ -1,3 +1,22 @@
+module clock_divider(
+    input clk,
+    output div_clk_out
+);
+
+parameter INPUT_FREQ = 100000000;
+parameter DIV = 100000;
+
+reg[25:0] count;
+
+always @(posedge clk) begin
+    count <= count + 1; 
+    if(count >= (DIV-1)) begin
+        count <= 0;
+    end
+end
+assign div_clk_out = (count<DIV/2)?1'b0:1'b1;
+endmodule
+
 module stepper_controller (
 input clk,
 input reset,
@@ -17,8 +36,15 @@ parameter S7 = 4'b1001;
 
 reg [3:0] state;
 
+wire div_clk;
 
-always @(posedge clk) begin
+clock_divider clock_divider_inst(
+    .clk(clk),
+    .div_clk_out(div_clk)
+);
+
+
+always @(posedge div_clk) begin
     case(state)
         IDLE: begin
             step_out = IDLE;
@@ -103,3 +129,4 @@ always @(posedge clk) begin
 end
 
 endmodule
+
